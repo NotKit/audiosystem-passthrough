@@ -16,6 +16,10 @@ Features and command line arguments
    * Devices which use vendor.qti.hardware.radio.am@1.0::IQcRilAudioCallback
      or vendor.qti.qcril.am@1.0::IQcRilAudioCallback hidl service for
      setting voice call related parameters.
+ * qti-aidl - IQcRilAudio (AIDL)
+   * Devices which use the vendor.qti.hardware.radio.am.IQcRilAudio/slotN aidl
+     service for setting voice call related parameters. Android 13 and later
+     radio stacks usually have this one instead of the hidl service.
  * hw2_0 - android.hardware.audio@2.0
    * Devices which use android.hardware.audio@2.0::IDevicesFactory/default and
      android.hardware.audio@2.0::IDevice services for setting voice call
@@ -26,11 +30,11 @@ Features and command line arguments
     -v --verbose   Verbose logging from audiosystem-passthrough
     -a --address   D-Bus address for PulseAudio module interface
     -i --idx       Starting index for binder calls, only applicable with operation type af
-    -t --type      Passthrough type. Can be af or qti
+    -t --type      Passthrough type. Can be af, qti, qti-aidl or hw2_0
     --module       Run as child process of PulseAudio module
 
     Also passthrough type and idx arguments can be provided from environment variables
-    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,af,hw2_0}
+    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,qti-aidl,af,hw2_0}
     AUDIOSYSTEM_PASSTHROUGH_IDX={17,18} # only applicable to af type
 
 How to use audiosystem-passthrough
@@ -43,10 +47,12 @@ configuration for the helper. If autodetection fails you can modify
 PulseAudio sysconfig file (/etc/sysconfig/pulseaudio) and add following
 environment variables:
 
-    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,af,hw2_0}
+    AUDIOSYSTEM_PASSTHROUGH_TYPE={qti,qti-aidl,af,hw2_0}
     AUDIOSYSTEM_PASSTHROUGH_IDX={17,18} # only applicable to af type
 
-Type qti is for devices which have qti HIDL interface IQcRilAudio.
+Type qti is for devices which have qti HIDL interface IQcRilAudio, type
+qti-aidl for devices which have the AIDL one. The module only autodetects the
+HIDL interface, so qti-aidl has to be set by hand.
 
 ### In standalone dummy mode
 
@@ -72,7 +78,11 @@ Android <= 8:
  * for media (camera etc): AudioFlinger (o)
 
 Android >= 9:
- * for voice calls: IQcRilAudio
+ * for voice calls: IQcRilAudio (hidl)
+ * for media (camera etc): AudioFlinger (o)
+
+Android >= 13:
+ * for voice calls: IQcRilAudio (aidl, if the hidl service is not registered)
  * for media (camera etc): AudioFlinger (o)
 
 ### Other chipsets
@@ -102,4 +112,5 @@ enough.
 #### IQcRilAudio
 
 For voice calls,
- * pulseaudio-modules-droid-hidl and audiosystem-passthrough (with qti type)
+ * pulseaudio-modules-droid-hidl and audiosystem-passthrough (with qti type,
+   or qti-aidl type if the device only has the AIDL interface)

@@ -13,7 +13,7 @@ LIBDIR ?= /usr/lib
 
 EXE = audiosystem-passthrough
 
-SRC = passthrough-helper.c impl-af.c impl-qti.c impl-hw2_0.c dbus-comms.c
+SRC = passthrough-helper.c impl-af.c impl-qti.c impl-qti-aidl.c impl-hw2_0.c dbus-comms.c
 
 all: $(EXE) pkgconfig
 

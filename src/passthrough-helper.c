@@ -186,6 +186,7 @@ app_init(
         goto fail;
     }
     g_free(type_str);
+    type_str = NULL;
 
     if (!g_strcmp0(app->config.address, DUMMY_MODE_STR)) {
         DBG("Dummy mode enabled.");
